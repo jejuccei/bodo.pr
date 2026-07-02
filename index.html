@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>보도자료 배포 일정 캘린더</title>
+  <meta name="description" content="사내 보도자료 배포 일정 관리 캘린더" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="logo">📰</span>
+      <div class="brand-text">
+        <h1>보도자료 배포 일정</h1>
+        <p class="subtitle">사내 보도자료 배포 일정 관리 캘린더</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span id="modeBadge" class="mode-badge view">👀 보기 모드</span>
+      <button id="adminBtn" class="btn btn-outline">🔑 관리자 모드</button>
+      <button id="addBtn" class="btn btn-primary hidden">＋ 일정 등록</button>
+    </div>
+  </header>
+
+  <div id="banner" class="banner hidden"></div>
+
+  <main class="layout">
+    <section class="calendar-panel card">
+      <div class="toolbar">
+        <div class="nav">
+          <button id="prevBtn" class="btn btn-icon" title="이전 달">◀</button>
+          <h2 id="monthLabel">—</h2>
+          <button id="nextBtn" class="btn btn-icon" title="다음 달">▶</button>
+          <button id="todayBtn" class="btn btn-outline btn-sm">오늘</button>
+        </div>
+        <div class="filters" id="filters"></div>
+      </div>
+
+      <div class="weekdays">
+        <div class="wd sun">일</div>
+        <div class="wd">월</div>
+        <div class="wd">화</div>
+        <div class="wd">수</div>
+        <div class="wd">목</div>
+        <div class="wd">금</div>
+        <div class="wd sat">토</div>
+      </div>
+      <div id="calendar" class="calendar-grid"></div>
+    </section>
+
+    <aside class="side-panel">
+      <div class="card">
+        <h3>📌 다가오는 배포 일정</h3>
+        <div id="upcoming" class="upcoming-list"></div>
+      </div>
+      <div class="card">
+        <h3>🏷️ 상태 안내</h3>
+        <div id="legend" class="legend"></div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- 일정 등록/수정 모달 -->
+  <div id="formModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-head">
+        <h3 id="formTitle">일정 등록</h3>
+        <button class="modal-close" data-close="formModal" aria-label="닫기">✕</button>
+      </div>
+      <form id="eventForm" novalidate>
+        <input type="hidden" id="f-id" />
+        <label class="field">
+          <span>제목 <em class="req">*</em></span>
+          <input type="text" id="f-title" required maxlength="120"
+            placeholder="예) 2026년 상반기 사업 성과 보도자료" />
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span>배포(예정)일 <em class="req">*</em></span>
+            <input type="date" id="f-date" required />
+          </label>
+          <label class="field">
+            <span>상태 <em class="req">*</em></span>
+            <select id="f-status">
+              <option value="접수">접수</option>
+              <option value="수정중">수정중</option>
+              <option value="배포예정">배포예정</option>
+              <option value="배포완료">배포완료</option>
+            </select>
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span>담당부서</span>
+            <input type="text" id="f-dept" maxlength="50" placeholder="예) 홍보팀" />
+          </label>
+          <label class="field">
+            <span>담당자</span>
+            <input type="text" id="f-manager" maxlength="50" placeholder="예) 홍길동" />
+          </label>
+        </div>
+        <label class="field">
+          <span>비고</span>
+          <textarea id="f-memo" rows="3" maxlength="500"
+            placeholder="배포 채널, 참고사항 등"></textarea>
+        </label>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" data-close="formModal">취소</button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 일정 상세 모달 -->
+  <div id="detailModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-head">
+        <h3>일정 상세</h3>
+        <button class="modal-close" data-close="detailModal" aria-label="닫기">✕</button>
+      </div>
+      <div id="detailBody" class="detail-body"></div>
+      <div class="form-actions" id="detailActions"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
