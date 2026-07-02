@@ -70,6 +70,26 @@
   };
   const todayStr = () => ymd(new Date());
 
+  // 서버(구글 시트)가 날짜를 어떤 형식으로 돌려주더라도 항상 YYYY-MM-DD 로 맞춘다.
+  // 예) "Thu Jul 02 2026 00:00:00 GMT+0900 (한국 표준시)", ISO 문자열, Date 등
+  const MONTHS = {
+    Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
+    Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12",
+  };
+  function normalizeDate(v) {
+    if (!v) return "";
+    const s = String(v).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s; // 이미 YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}T/.test(s)) return s.slice(0, 10); // ISO
+    // JS Date.toString() 형식에서 월/일/연을 직접 추출 (타임존 영향 없음)
+    const m = s.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})\s+(\d{4})\b/);
+    if (m) return `${m[3]}-${MONTHS[m[1]]}-${pad(Number(m[2]))}`;
+    // 마지막 수단: Date 파싱 (로컬 기준)
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) return ymd(d);
+    return s;
+  }
+
   function esc(s) {
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;")
@@ -146,7 +166,11 @@
   /* ---------- 데이터 로드 ---------- */
   async function loadEvents() {
     try {
-      events = await apiGet();
+      const raw = await apiGet();
+      // 날짜를 항상 YYYY-MM-DD 로 정규화해 캘린더 비교가 정확하도록 한다.
+      events = raw.map((e) =>
+        Object.assign({}, e, { date: normalizeDate(e.date) })
+      );
       render();
     } catch (err) {
       console.error(err);
@@ -520,7 +544,7 @@
   }
 
   /* ---------- 초기화 ---------- */
-  function init() {
+  async function init() {
     if (DEMO) {
       showBanner(
         "⚠️ 데모 모드입니다. js/config.js 에 Apps Script 웹앱 URL을 넣으면 " +
@@ -531,9 +555,25 @@
     } else {
       el.banner.classList.add("hidden");
     }
-    isAdmin = !!getAdminPw();
-    updateAdminUI();
     bindEvents();
+
+    // 저장된 관리자 세션이 있으면 서버로 다시 확인한다.
+    // (서버 비밀번호가 미설정/변경된 경우, 관리자로 보이지만 저장이 실패하는
+    //  혼란을 막기 위해 세션을 자동으로 해제한다.)
+    if (getAdminPw()) {
+      if (DEMO) {
+        isAdmin = true;
+      } else {
+        try {
+          const res = await apiPost({ action: "auth", password: getAdminPw() });
+          isAdmin = !!res.ok;
+          if (!res.ok) sessionStorage.removeItem("pr_admin_pw");
+        } catch (e) {
+          isAdmin = false;
+        }
+      }
+    }
+    updateAdminUI();
     loadEvents();
   }
 
