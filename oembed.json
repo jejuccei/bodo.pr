@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "type": "photo",
+  "title": "보도자료 배포 일정",
+  "provider_name": "보도자료 배포 일정 캘린더",
+  "provider_url": "https://jejuccei.github.io/bodo.pr/",
+  "author_name": "보도자료 배포 일정 캘린더",
+  "url": "https://jejuccei.github.io/bodo.pr/og-image.png",
+  "width": 1200,
+  "height": 630,
+  "thumbnail_url": "https://jejuccei.github.io/bodo.pr/og-image.png",
+  "thumbnail_width": 1200,
+  "thumbnail_height": 630
+}
