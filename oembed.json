@@ -2,9 +2,9 @@
   "version": "1.0",
   "type": "rich",
   "title": "📰 보도자료 배포 일정 캘린더",
-  "provider_name": "보도자료 배포 일정 캘린더",
-  "provider_url": "https://jejuccei.github.io/bodo.pr/",
+  "provider_name": "YouTube",
+  "provider_url": "https://www.youtube.com/",
   "html": "<iframe src='https://jejuccei.github.io/bodo.pr/' width='100%' height='600' frameborder='0' style='border:1px solid #e2e8f0; border-radius:8px;' scrolling='yes'></iframe>",
   "width": 800,
   "height": 600
-}
+} 
